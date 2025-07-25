@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <title>Головна — Система Бронювання</title>
+</head>
+<body>
+
+<h1>Система бронювання кімнат</h1>
+
+<!-- Перевірка авторизованого користувача -->
+{% if user.is_authenticated %}
+<p>Привіт, {{ user.username }}! <a href="{% url 'logout' %}">Вийти</a></p>
+<p><a href="{% url 'my_reservations' %}">Мої бронювання</a></p>
+
+{% else %}
+<p><a href="{% url 'login' %}">Увійти</a> | <a href="{% url 'register' %}">Реєстрація</a></p>
+{% endif %}
+
+<hr>
+
+<h2>Доступні кімнати</h2>
+<ul>
+    {% for room in rooms %}
+    <li>
+        <strong>{{ room.name }}</strong><br>
+        Місткість: {{ room.capacity }} людей<br>
+        Ціна: {{ room.price }} грн<br>
+    </li>
+    {% empty %}
+    <li>Наразі немає доступних кімнат.</li>
+    {% endfor %}
+</ul>
+
+<!-- Кнопка переходу до бронювання -->
+{% if user.is_authenticated %}
+<a href="{% url 'make_reservation' %}">Забронювати кімнату</a>
+{% else %}
+<p>Щоб забронювати кімнату, <a href="{% url 'login' %}">увійдіть</a> в систему.</p>
+{% endif %}
+<p><a href="{% url 'availability' %}">Переглянути доступність кімнат</a></p>
+
+</body>
+</html>
+

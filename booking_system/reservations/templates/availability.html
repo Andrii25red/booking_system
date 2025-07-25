@@ -1,0 +1,29 @@
+<h2>Перегляд доступності кімнат</h2>
+
+<form method="get">
+    <label for="room">Оберіть кімнату:</label>
+    <select name="room" id="room" onchange="this.form.submit()">
+        <option value="">-- оберіть --</option>
+        {% for room in rooms %}
+            <option value="{{ room.id }}" {% if selected_room and room.id == selected_room.id %}selected{% endif %}>
+                {{ room.name }}
+            </option>
+        {% endfor %}
+    </select>
+</form>
+
+{% if selected_room %}
+    <h3>Бронювання для кімнати "{{ selected_room.name }}"</h3>
+
+    {% if reservations %}
+        <ul>
+            {% for res in reservations %}
+                <li>{{ res.start_date }} — {{ res.end_date }} ({{ res.get_status_display }})</li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>Немає активних бронювань для цієї кімнати.</p>
+    {% endif %}
+{% endif %}
+
+<a href="{% url 'home' %}">← На головну</a>
