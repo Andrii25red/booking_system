@@ -2,47 +2,156 @@
 <html lang="uk">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Головна — Система Бронювання</title>
+    <link href="https://fonts.googleapis.com/css?family=Roboto:400,700&display=swap" rel="stylesheet">
+    <style>
+        /* Загальні стилі */
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Roboto', sans-serif;
+            background-color: #f4f6f8;
+            color: #333;
+        }
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem 0;
+        }
+
+        /* Хедер */
+        header {
+            background-color: #007bff;
+            color: #fff;
+        }
+        .header-inner {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        header h1 {
+            margin: 0;
+            font-size: 1.75rem;
+        }
+        .auth-links a {
+            color: #fff;
+            text-decoration: none;
+            margin-left: 1rem;
+            font-weight: 500;
+        }
+        .auth-links a.btn {
+            padding: 0.4rem 0.8rem;
+            border-radius: 4px;
+        }
+
+        /* Кнопки */
+        .btn {
+            display: inline-block;
+            padding: 0.6rem 1rem;
+            border-radius: 4px;
+            text-decoration: none;
+            font-weight: 500;
+            margin-right: 0.5rem;
+        }
+        .btn-primary {
+            background-color: #28a745;
+            color: #fff;
+        }
+        .btn-secondary {
+            background-color: #6c757d;
+            color: #fff;
+        }
+
+        /* Секція кімнат */
+        h2 {
+            margin-top: 2rem;
+            font-size: 1.5rem;
+        }
+        .rooms {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 1rem;
+            list-style: none;
+            padding: 0;
+            margin: 1rem 0;
+        }
+        .room {
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+            padding: 1rem;
+        }
+        .room strong {
+            display: block;
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+        }
+        .room p {
+            margin: 0.25rem 0;
+        }
+
+        /* Футер */
+        footer {
+            text-align: center;
+            padding: 1rem 0;
+            background: #e9ecef;
+            margin-top: 2rem;
+            font-size: 0.9rem;
+        }
+    </style>
 </head>
 <body>
 
-<h1>Система бронювання кімнат</h1>
+    <header>
+        <div class="container header-inner">
+            <h1>Система бронювання кімнат</h1>
+            <div class="auth-links">
+                {% if user.is_authenticated %}
+                    <span>Привіт, {{ user.username }}!</span>
+                    <a href="{% url 'logout' %}" class="btn btn-secondary">Вийти</a>
+                {% else %}
+                    <a href="{% url 'login' %}" class="btn btn-secondary">Увійти</a>
+                    <a href="{% url 'register' %}" class="btn btn-primary">Реєстрація</a>
+                {% endif %}
+            </div>
+        </div>
+    </header>
 
-<!-- Перевірка авторизованого користувача -->
-{% if user.is_authenticated %}
-<p>Привіт, {{ user.username }}! <a href="{% url 'logout' %}">Вийти</a></p>
-<p><a href="{% url 'my_reservations' %}">Мої бронювання</a></p>
+    <main class="container">
+        {% if user.is_authenticated %}
+            <a href="{% url 'my_reservations' %}" class="btn btn-primary">Мої бронювання</a>
+        {% endif %}
 
-{% else %}
-<p><a href="{% url 'login' %}">Увійти</a> | <a href="{% url 'register' %}">Реєстрація</a></p>
-{% endif %}
+        <hr>
 
-<hr>
+        <h2>Доступні кімнати</h2>
+        <ul class="rooms">
+            {% for room in rooms %}
+                <li class="room">
+                    <strong>{{ room.name }}</strong>
+                    <p>Місткість: {{ room.capacity }} осіб</p>
+                    <p>Ціна: {{ room.price }} грн</p>
+                </li>
+            {% empty %}
+                <li>Наразі немає доступних кімнат.</li>
+            {% endfor %}
+        </ul>
 
-<h2>Доступні кімнати</h2>
-<ul>
-    {% for room in rooms %}
-    <li>
-        <strong>{{ room.name }}</strong><br>
-        Місткість: {{ room.capacity }} людей<br>
-        Ціна: {{ room.price }} грн<br>
-    </li>
-    {% empty %}
-    <li>Наразі немає доступних кімнат.</li>
-    {% endfor %}
-</ul>
+        <div class="actions">
+            {% if user.is_authenticated %}
+                <a href="{% url 'make_reservation' %}" class="btn btn-primary">Забронювати кімнату</a>
+            {% else %}
+                <p>Щоб забронювати кімнату, <a href="{% url 'login' %}" class="btn btn-primary">увійдіть</a> в систему.</p>
+            {% endif %}
+            <a href="{% url 'availability' %}" class="btn btn-secondary">Переглянути доступність</a>
+        </div>
+    </main>
 
-<!-- Кнопка переходу до бронювання -->
-{% if user.is_authenticated %}
-<a href="{% url 'make_reservation' %}">Забронювати кімнату</a>
-{% else %}
-<p>Щоб забронювати кімнату, <a href="{% url 'login' %}">увійдіть</a> в систему.</p>
-{% endif %}
-<p><a href="{% url 'availability' %}">Переглянути доступність кімнат</a></p>
+    <footer>
+        © {% now "Y" %} Система бронювання
+    </footer>
 
 </body>
 </html>
-
-
-
-
