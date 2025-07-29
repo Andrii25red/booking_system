@@ -1,7 +1,148 @@
-<h2>Реєстрація</h2>
-<form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Зареєструватися</button>
-</form>
-<a href="{% url 'login' %}">Вже маєш акаунт?</a>
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Доступність кімнат — Система Бронювання</title>
+    <link href="https://fonts.googleapis.com/css?family=Roboto:400,500&display=swap" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Roboto', sans-serif;
+            background-color: #f4f6f8;
+            color: #333;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 2rem auto;
+            padding: 1rem;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            margin-top: 0;
+            color: #007bff;
+            text-align: center;
+            font-size: 1.75rem;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
+
+        select {
+            padding: 0.6rem;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 1rem;
+            margin-bottom: 1rem;
+            cursor: pointer;
+        }
+
+        .reservations {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .reservation-card {
+            background: #e9ecef;
+            border-radius: 6px;
+            padding: 0.8rem 1rem;
+            margin-bottom: 0.75rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .reservation-dates {
+            font-weight: 500;
+        }
+
+        .reservation-status {
+            padding: 0.2rem 0.6rem;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            text-transform: capitalize;
+        }
+
+        .status-active {
+            background-color: #28a745;
+            color: #fff;
+        }
+
+        .status-cancelled {
+            background-color: #dc3545;
+            color: #fff;
+        }
+
+        .no-reservations {
+            text-align: center;
+            font-style: italic;
+            color: #666;
+        }
+
+        .back-link {
+            display: block;
+            text-decoration: none;
+            color: #007bff;
+            margin-top: 1.5rem;
+            text-align: center;
+            font-size: 0.95rem;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2>Перегляд доступності кімнат</h2>
+
+    <form method="get">
+        <label for="room">Оберіть кімнату:</label>
+        <select name="room" id="room" onchange="this.form.submit()">
+            <option value="">— оберіть —</option>
+            {% for room in rooms %}
+            <option value="{{ room.id }}"
+                    {% if selected_room and room.id== selected_room.id %}selected{% endif %}>
+                {{ room.name }}
+            </option>
+            {% endfor %}
+        </select>
+    </form>
+
+    {% if selected_room %}
+    <h3>Бронювання для "{{ selected_room.name }}"</h3>
+
+    {% if reservations %}
+    <ul class="reservations">
+        {% for res in reservations %}
+        <li class="reservation-card">
+              <span class="reservation-dates">
+                {{ res.start_date|date:"Y-m-d H:i" }} — {{ res.end_date|date:"Y-m-d H:i" }}
+              </span>
+            <span class="reservation-status
+                           {% if res.status == 'active' %}status-active{% elif res.status == 'cancelled' %}status-cancelled{% endif %}">
+                {{ res.get_status_display }}
+              </span>
+        </li>
+        {% endfor %}
+    </ul>
+    {% else %}
+    <p class="no-reservations">Немає активних бронювань для цієї кімнати.</p>
+    {% endif %}
+    {% endif %}
+
+    <a href="{% url 'home' %}" class="back-link">← На головну</a>
+</div>
+</body>
+</html>
