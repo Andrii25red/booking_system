@@ -1,7 +1,113 @@
-<h1>Забронювати кімнату</h1>
-
-<form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Забронювати</button>
-</form>
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Забронювати кімнату — Система Бронювання</title>
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #8e44ad;        /* фіолетовий */
+      --accent: #e67e22;         /* помаранчевий */
+      --bg: #fdfdfd;             /* світле тло */
+      --card-bg: #ffffff;        /* біле тло картки */
+      --text: #2c3e50;           /* темно-синій текст */
+      --border: #bdc3c7;         /* світло-сірий бордер */
+      --radius: 8px;
+      --gap: 1rem;
+    }
+    *, *::before, *::after {
+      box-sizing: border-box;
+    }
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Open Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+    }
+    .container {
+      max-width: 480px;
+      margin: 2rem auto;
+      padding: var(--gap);
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    }
+    h1 {
+      margin: 0 0 var(--gap);
+      font-size: 1.8rem;
+      font-weight: 600;
+      color: var(--primary);
+      text-align: center;
+    }
+    .booking-form {
+      display: flex;
+      flex-direction: column;
+    }
+    .booking-form p {
+      margin-bottom: var(--gap);
+    }
+    .booking-form label {
+      display: block;
+      margin-bottom: 0.25rem;
+      font-weight: 600;
+    }
+    .booking-form input,
+    .booking-form select {
+      width: 100%;
+      padding: 0.6rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      font-size: 1rem;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .booking-form input:focus,
+    .booking-form select:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 5px rgba(230,126,34,0.3);
+    }
+    .btn {
+      padding: 0.7rem 1.4rem;
+      font-size: 1rem;
+      font-weight: 600;
+      color: #fff;
+      background: var(--accent);
+      border: none;
+      border-radius: var(--radius);
+      cursor: pointer;
+      transition: background 0.2s;
+      margin-top: var(--gap);
+    }
+    .btn:hover {
+      background: #d96b18;
+    }
+    .back-link {
+      display: block;
+      margin-top: calc(var(--gap) * 1.5);
+      text-decoration: none;
+      color: var(--primary);
+      font-size: 0.95rem;
+      text-align: center;
+      font-weight: 600;
+      transition: color 0.2s;
+    }
+    .back-link:hover {
+      color: #732d91;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Забронювати кімнату</h1>
+    <form method="post" class="booking-form">
+      {% csrf_token %}
+      {{ form.as_p }}
+      <button type="submit" class="btn">Забронювати</button>
+    </form>
+    <a href="{% url 'rooms:room_list' %}" class="back-link">← Повернутися до списку кімнат</a>
+  </div>
+</body>
+</html>
