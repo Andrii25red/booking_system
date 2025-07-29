@@ -1,29 +1,169 @@
-<h2>Перегляд доступності кімнат</h2>
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Доступність кімнат — Система Бронювання</title>
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #0069d9;
+      --secondary: #5a6268;
+      --bg-light: #f8f9fa;
+      --bg-white: #ffffff;
+      --text-dark: #343a40;
+      --text-muted: #6c757d;
+      --success: #28a745;
+      --danger: #dc3545;
+    }
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Open Sans', sans-serif;
+      background: var(--bg-light);
+      color: var(--text-dark);
+      line-height: 1.5;
+    }
+    .wrapper {
+      max-width: 700px;
+      margin: 2rem auto;
+      padding: 1rem;
+      background: var(--bg-white);
+      border-radius: 6px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    h1, h2, h3 {
+      margin: 0 0 1rem;
+      font-weight: 600;
+    }
+    h1 {
+      font-size: 1.75rem;
+      color: var(--primary);
+      text-align: center;
+    }
+    form {
+      display: flex;
+      align-items: center;
+      margin-bottom: 1.5rem;
+    }
+    label {
+      flex: 0 0 120px;
+      font-weight: 600;
+    }
+    select {
+      flex: 1;
+      padding: 0.5rem;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 1rem;
+    }
+    select:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 3px rgba(0,105,217,0.3);
+    }
+    .reservations {
+      margin: 1rem 0;
+      padding: 0;
+      list-style: none;
+    }
+    .reservations li {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 0.5rem;
+      padding: 0.75rem;
+      margin-bottom: 0.5rem;
+      background: var(--bg-light);
+      border-left: 4px solid var(--primary);
+      border-radius: 4px;
+    }
+    .reservations time {
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+    .reservations .status {
+      align-self: center;
+      padding: 0.25rem 0.75rem;
+      font-size: 0.85rem;
+      border-radius: 12px;
+      text-transform: uppercase;
+      color: #fff;
+    }
+    .status-active {
+      background: var(--success);
+    }
+    .status-cancelled {
+      background: var(--danger);
+    }
+    .no-data {
+      text-align: center;
+      padding: 1rem 0;
+      color: var(--text-muted);
+      font-style: italic;
+    }
+    .back {
+      display: inline-block;
+      margin-top: 1.5rem;
+      color: var(--primary);
+      text-decoration: none;
+      font-weight: 600;
+    }
+    .back:hover {
+      text-decoration: underline;
+    }
+    @media (max-width: 480px) {
+      .reservations li {
+        grid-template-columns: 1fr;
+      }
+      .reservations .status {
+        margin-top: 0.5rem;
+        justify-self: start;
+      }
+    }
+  </style>
+</head>
+<body>
 
-<form method="get">
-    <label for="room">Оберіть кімнату:</label>
-    <select name="room" id="room" onchange="this.form.submit()">
-        <option value="">-- оберіть --</option>
+  <div class="wrapper">
+    <h1>Перегляд доступності</h1>
+
+    <form method="get">
+      <label for="room">Кімната:</label>
+      <select id="room" name="room" onchange="this.form.submit()">
+        <option value="">— виберіть кімнату —</option>
         {% for room in rooms %}
-            <option value="{{ room.id }}" {% if selected_room and room.id == selected_room.id %}selected{% endif %}>
-                {{ room.name }}
-            </option>
+          <option value="{{ room.id }}" {% if selected_room and room.id == selected_room.id %}selected{% endif %}>
+            {{ room.name }}
+          </option>
         {% endfor %}
-    </select>
-</form>
+      </select>
+    </form>
 
-{% if selected_room %}
-    <h3>Бронювання для кімнати "{{ selected_room.name }}"</h3>
+    {% if selected_room %}
+      <h2>Бронювання для «{{ selected_room.name }}»</h2>
 
-    {% if reservations %}
-        <ul>
-            {% for res in reservations %}
-                <li>{{ res.start_date }} — {{ res.end_date }} ({{ res.get_status_display }})</li>
-            {% endfor %}
+      {% if reservations %}
+        <ul class="reservations">
+          {% for res in reservations %}
+            <li>
+              <time datetime="{{ res.start_date }}">{{ res.start_date|date:"Y-m-d H:i" }}</time>
+              <time datetime="{{ res.end_date }}">— {{ res.end_date|date:"Y-m-d H:i" }}</time>
+              <span class="status {% if res.status=='active' %}status-active{% else %}status-cancelled{% endif %}">
+                {{ res.get_status_display }}
+              </span>
+            </li>
+          {% endfor %}
         </ul>
-    {% else %}
-        <p>Немає активних бронювань для цієї кімнати.</p>
+      {% else %}
+        <div class="no-data">Немає бронювань для обраної кімнати.</div>
+      {% endif %}
     {% endif %}
-{% endif %}
 
-<a href="{% url 'home' %}">← На головну</a>
+    <a href="{% url 'home' %}" class="back">← Повернутися на головну</a>
+  </div>
+
+</body>
+</html>
